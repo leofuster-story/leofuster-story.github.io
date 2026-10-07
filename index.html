@@ -116,18 +116,25 @@ img { max-width: 100%; }
 
 /* ================= Chapter (centered) layout ================= */
 .cen {
+  --qf: clamp(30px, 3.1vw, 54px);   /* lyric size; the title and its overlap derive from it */
   position: absolute; inset: 0; z-index: 2; overflow-y: auto; box-sizing: border-box; scrollbar-width: none;
   display: flex; flex-direction: column; align-items: center; justify-content: safe center; text-align: center;
-  padding: var(--hdr) var(--gut) var(--ftr); gap: clamp(20px, 4.5vh, 56px);
+  padding: var(--hdr) var(--gut) var(--ftr);
 }
 .cen::-webkit-scrollbar { display: none; }
-.cen .quote { font-size: clamp(26px, 3.5vw, 58px); max-width: 980px; }
-.cen-group { max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 2.6vh, 26px); }
-.cen-group .tt { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.cen-group .song { font-size: clamp(44px, 6.6vw, 108px); }
-.cen-group .artist { font-size: clamp(24px, 2.4vw, 38px); }
-.cen-story { font-family: var(--f-acorn); font-size: clamp(17px, 1.55vw, 24px); line-height: 1.5; max-width: 34ch; margin: 0; white-space: pre-line; text-wrap: balance; }
-.cen-chapter { font-family: var(--f-acorn); font-weight: 300; font-size: clamp(16px, 1.4vw, 22px); margin: 0; letter-spacing: .02em; }
+/* lyrics: a left-aligned block, centred as a whole on the page */
+.cen-quote { display: flex; flex-direction: column; align-items: flex-start; text-align: left; width: fit-content; max-width: 100%; margin: 0 auto; font-size: var(--qf); line-height: 1.1; position: relative; z-index: 1; text-wrap: initial; }
+.cen-quote span { display: block; white-space: nowrap; }
+/* title group overflows onto the last lyric line */
+.cen-group { position: relative; z-index: 2; max-width: 900px; display: flex; flex-direction: column; align-items: center; margin-top: calc(var(--qf) * -1.18); }
+.no-quote .cen-group { margin-top: 0; }
+.cen-group .tt { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.cen-group .song { font-size: calc(var(--qf) * 1.62); line-height: .95; }
+.cen-group .artist { font-size: calc(var(--qf) * .66); margin-top: calc(var(--qf) * .02); }
+.no-quote .cen-group .song { font-size: clamp(48px, 6.4vw, 108px); }
+.no-quote .cen-group .artist { font-size: clamp(24px, 2.4vw, 38px); }
+.cen-story { font-family: var(--f-acorn); font-size: clamp(17px, 1.5vw, 25px); line-height: 1.5; max-width: 36ch; margin: clamp(18px, 2.6vh, 30px) 0 0; white-space: pre-line; text-wrap: balance; }
+.cen-chapter { font-family: var(--f-acorn); font-weight: 300; font-size: clamp(16px, 1.3vw, 21px); margin: clamp(14px, 2vh, 22px) 0 0; letter-spacing: .02em; color: rgba(13,13,13,.78); }
 .human-bg { position: absolute; top: -10vh; left: -10vw; width: 120vw; height: 120vh; pointer-events: none; z-index: 0; overflow: hidden; }
 .human-bg div { position: absolute; left: 0; white-space: nowrap; display: flex; }
 .human-bg span { font-family: var(--f-display); font-weight: 700; font-size: 54px; line-height: 1; margin-right: 100px; color: transparent; -webkit-text-stroke: 1px #C4C4C4; opacity: .4; }
@@ -509,7 +516,9 @@ a.pic:hover .hov span { opacity: 1; }
   .dark-ui .mcount { color: rgba(255,255,255,.7); }
   #timeline, .hint { display: none; }
   .intro .io-the { transform: translateX(-8%); }
-  .cen { gap: 20px; }
+  .cen { --qf: clamp(20px, 5.6vw, 30px); }
+  .cen-quote { align-items: center; text-align: center; }
+  .cen-quote span { white-space: normal; }
   .copy, .implied p { font-size: 15px; }
   .h3 { font-size: 17px; }
 
@@ -820,7 +829,20 @@ const PLAYLIST = [
   }
 ];
 
+// Léo's YouTube playlist: the ↗ button opens each song inside it (same order as the slides)
+const YT_PLAYLIST = 'PL5WElwlxybIRvoMkO1FYHvpxENrJuUGjX';
+const YT_PLAYLIST_URL = 'https://www.youtube.com/playlist?list=' + YT_PLAYLIST;
+const YT_PLAYLIST_IDS = ['Jwtyn-L-2gQ', 'iwzL4WP9mwg', 'x06Mjtc7-oU', 'VTWZ2RyzEKA', 'QZyB85kQeJw', 'IX2bE-OBtwk', 'Z2gtZSp5rP4', 'rUVEFkjqiEE', 'ulq14QrjBn0', 'vETUpJ88cfA', 'KTzhddiC3TI', 'r4G0nbpLySI', 'JZQzAWzSsn4', 'DJ5X8OelEgs', 'YwozDusaQxs'];
+const songInPlaylist = (i) => `https://www.youtube.com/watch?v=${YT_PLAYLIST_IDS[i]}&list=${YT_PLAYLIST}&index=${i + 1}`;
+
 const CENTERED = [1, 4, 7, 11];
+
+// Lyric line breaks for the chapter slides (the quote is set as a left-aligned block, title overlapping its last line)
+const QUOTE_LINES = {
+  1: ["I'm feeling Summer in my heart", 'Feeling like Winter in my feet', 'But you got a warmness', 'That melts me like Spring'],
+  7: ['Lend me your ears,', "Then I'll sing you a song", 'I will try not to sing out of key'],
+  11: ["I'm good at stuff", "And you're into stuff (woo)", "Let's make products"]
+};
 
 const HINTS = {
   0: { glass: 'clear', lines: ['← → Arrow keys to navigate', 'Space to play/pause', 'M to mute/unmute', 'Click timeline dots to jump'] },
@@ -1263,8 +1285,8 @@ function renderTrack(t, i) {
     const bg = t.id === 4
       ? '<div class="human-bg" aria-hidden="true">' + Array.from({ length: 15 }, (_, r) => `<div style="top:${r * 100}px">${'<span>"Human Together"</span>'.repeat(15)}</div>`).join('') + '</div>'
       : '';
-    sec.innerHTML = `${bg}<div class="cen">
-      ${t.id !== 4 ? `<p class="quote rv">"${esc(t.quote)}"</p>` : ''}
+    sec.innerHTML = `${bg}<div class="cen ${t.id === 4 ? 'no-quote' : ''}">
+      ${t.id !== 4 ? `<p class="quote cen-quote rv">${(QUOTE_LINES[t.id] || [t.quote]).map((l, k, arr) => `<span>${k === 0 ? '“' : ''}${esc(l)}${k === arr.length - 1 ? '”' : ''}</span>`).join('')}</p>` : ''}
       <div class="cen-group rv">
         <div class="tt"><h2 class="song">${esc(t.songTitle)}</h2><p class="artist">- ${esc(t.artist)}</p></div>
         <p class="cen-story">${esc(t.story)}</p>
@@ -1349,7 +1371,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueFit);
    song's real length so the journey still flows. */
 let yt = null, mode = 'probe';   // 'probe' → 'audio' (YouTube ready) | 'sim'
 let simTrack = false, lastTick = 0, retryT = 0;
-const ytUrl = () => `https://www.youtube.com/watch?v=${PLAYLIST[S.cur].youtubeId}`;
+const ytUrl = () => songInPlaylist(S.cur);
 const useAudio = () => mode === 'audio' && !simTrack;
 const duration = () => {
   if (useAudio()) { try { const d = yt.getDuration(); if (d > 0) return d; } catch (_) {} return 0; }
@@ -1527,7 +1549,7 @@ function sync() {
   $('.pmeta .a').textContent = t.artist;
   $('.count').textContent = `${S.cur + 1} / ${N}`;
   $('.mcount').textContent = `${S.cur + 1} / ${N}`;
-  $$('.ext-out').forEach((a) => { a.href = ytUrl(); a.setAttribute('aria-label', `Listen to ${t.songTitle} on YouTube`); a.title = 'Listen on YouTube'; });
+  $$('.ext-out').forEach((a) => { a.href = ytUrl(); a.setAttribute('aria-label', `Open ${t.songTitle} in the YouTube playlist`); a.title = 'Open in the YouTube playlist'; });
 
   // mobile player
   $('.mp-top img').src = t.cover; $('.mp-top img').alt = `${t.songTitle} by ${t.artist}`;
