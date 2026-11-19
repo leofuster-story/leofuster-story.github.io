@@ -1021,6 +1021,9 @@ body.at-intro .org-chip { opacity: 1; visibility: visible; transform: rotate(-4d
 .lis-m .lis-board { position: relative; inset: auto; width: min(100%, 380px); aspect-ratio: 1; }
 .lis-m .lis-sheet { transform: rotate(3deg) scale(.78); }
 .lis-m .lis-try { font-size: 13px; } .lis-m .lis-try input { width: 150px; font-size: 14px; }
+
+/* the artist stays visible in the player on short laptop screens too */
+@media (min-width: 1024px) and (max-height: 820px) { .pmeta .a { display: block; } }
 </style>
 <link rel="icon" href="../assets/cover-00.jpg">
 </head>
@@ -1247,7 +1250,7 @@ const PLAYLIST = [
     "chName": "Structurer",
     "song": "Lucy In The Sky With Diamonds",
     "artist": "The Beatles",
-    "cover": "../assets/cover-lucy.png",
+    "cover": "../assets/cover-lucy.jpg",
     "marks": [
      2,
      2,
@@ -1574,7 +1577,7 @@ const PLAYLIST = [
   ],
   "songTitle": "Lucy In The Sky With Diamonds",
   "artist": "The Beatles",
-  "cover": "../assets/cover-lucy.png",
+  "cover": "../assets/cover-lucy.jpg",
   "youtubeId": "RxMUCXo6NgE",
   "plId": "RxMUCXo6NgE",
   "plIndex": 15,
