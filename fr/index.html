@@ -832,7 +832,7 @@ body.at-intro .org-chip { opacity: 1; visibility: visible; transform: rotate(-4d
 .tk-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 32px; flex-wrap: wrap; margin: clamp(6px, calc(10 * var(--u)), 12px) 0 clamp(14px, calc(22 * var(--u)), 26px); }
 .tk-sub { margin: 0; font-family: var(--f-acorn); font-size: clamp(15px, calc(19 * var(--u)), 22px); line-height: 1.45; max-width: 72ch; }
 
-.tk-box { background: rgba(255, 255, 255, .72); border: 1px solid rgba(13, 13, 13, .08); border-radius: 22px; padding: clamp(6px, calc(10 * var(--u)), 12px) clamp(14px, calc(28 * var(--u)), 32px) clamp(10px, calc(16 * var(--u)), 18px);
+.tk-box { background: #fbfbfb; border: 1px solid rgba(13, 13, 13, .08); border-radius: 22px; padding: clamp(6px, calc(10 * var(--u)), 12px) clamp(14px, calc(28 * var(--u)), 32px) clamp(10px, calc(16 * var(--u)), 18px);
   box-shadow: 0 30px 60px -48px rgba(13, 13, 13, .35); overflow-x: auto; scrollbar-width: none; }
 .tk-table { width: 100%; border-collapse: collapse; font-family: var(--f-acorn); font-variant-numeric: tabular-nums; }
 .tk-table thead th { font-size: clamp(12px, calc(13.5 * var(--u)), 15px); font-weight: 400; color: rgba(13, 13, 13, .62); text-align: center; padding: clamp(8px, calc(12 * var(--u)), 14px) 6px clamp(4px, calc(6 * var(--u)), 8px); white-space: nowrap; }
@@ -1024,6 +1024,40 @@ body.at-intro .org-chip { opacity: 1; visibility: visible; transform: rotate(-4d
 
 /* the artist stays visible in the player on short laptop screens too */
 @media (min-width: 1024px) and (max-height: 820px) { .pmeta .a { display: block; } }
+
+/* an award that links to its source keeps the same look, with a quiet hover */
+.aw-link { display: flex; align-items: center; gap: 16px; color: inherit; text-decoration: none; border-radius: 6px; }
+.aw-link:hover .copy { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.aw-link:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+
+/* ---------- scroll fades: content never runs under the header, the lyric or the timeline ---------- */
+.tlist .tk-wrap, .cen, .io {
+  -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--hdr) - 32px), #000 calc(var(--hdr) - 4px), #000 calc(100% - var(--ftr) - 16px), transparent calc(100% - var(--ftr) + 8px));
+          mask-image: linear-gradient(to bottom, transparent calc(var(--hdr) - 32px), #000 calc(var(--hdr) - 4px), #000 calc(100% - var(--ftr) - 16px), transparent calc(100% - var(--ftr) + 8px));
+}
+@media (max-width: 1023px) {
+  .std-col {
+    -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--hdr) - 28px), #000 calc(var(--hdr) - 2px), #000 calc(100% - var(--ftr) - 16px), transparent calc(100% - var(--ftr) + 8px));
+            mask-image: linear-gradient(to bottom, transparent calc(var(--hdr) - 28px), #000 calc(var(--hdr) - 2px), #000 calc(100% - var(--ftr) - 16px), transparent calc(100% - var(--ftr) + 8px));
+  }
+}
+/* desktop tracklist: the title stays put, only the table scrolls, its column names pinned */
+@media (min-width: 1024px) {
+  .tlist .tk-wrap { -webkit-mask-image: none; mask-image: none; overflow: hidden; display: flex; flex-direction: column; padding-bottom: calc(var(--ftr) + 16px); }
+  .tlist .tk-in { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; align-self: stretch; width: 100%; margin: 0; }
+  .tk-top, .tk-meta { flex: none; }
+  .tk-box { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .tk-scroll { min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior: contain; scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent); }
+  .tk-scroll::-webkit-scrollbar { display: none; }
+  .tk-table thead th { position: sticky; top: 0; z-index: 1; background: #fbfbfb; }
+}
+.tk-scroll:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 12px; }
+/* liner notes left column: soft edges when it scrolls on short screens */
+.liner2-d {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 18px, #000 calc(100% - 28px), transparent);
+          mask-image: linear-gradient(to bottom, transparent 0, #000 18px, #000 calc(100% - 28px), transparent);
+}
 </style>
 <link rel="icon" href="../assets/cover-00.jpg">
 </head>
@@ -1164,7 +1198,8 @@ const PLAYLIST = [
     [
      "award-grandprix.png",
      "Grand Prix Médias CB News",
-     "franceinfo : 1re plateforme d'information en France."
+     "franceinfo : 1re plateforme d'information en France.",
+     "https://www.francetvinfo.fr/replay-radio/le-rendez-vous-du-mediateur/le-succes-de-l-offre-numerique-sur-franceinfo-premiere-plateforme-d-information-consultee-au-quotidien_5072284.html"
     ],
     [
      "award-eventex.png",
@@ -2538,7 +2573,7 @@ const TQ = (q) => q ? `<div class="tq"><p class="quote">“${esc(q)}”</p></div
 const CH_NUM = { I: '01', II: '02', III: '03' };
 // impact: a sentence, a link, a few points, or awards (logo + line)
 const impactBody = (imp) => imp.awards
-  ? `<ul class="awards">${imp.awards.map(([img, alt, txt]) => `<li><span class="aw-logo${img.includes('eventex') ? ' boxed' : ''}"><img src="../assets/${img}" alt="${esc(alt)}"></span><p class="copy">${esc(txt)}</p></li>`).join('')}</ul>`
+  ? `<ul class="awards">${imp.awards.map(([img, alt, txt, url]) => { const inner = `<span class="aw-logo${img.includes('eventex') ? ' boxed' : ''}"><img src="../assets/${img}" alt="${esc(alt)}"></span><p class="copy">${esc(txt)}</p>`; return `<li>${url ? `<a class="aw-link" href="${url}" target="_blank" rel="noopener noreferrer">${inner}</a>` : inner}</li>`; }).join('')}</ul>`
   : imp.items ? `<ul class="impact-list copy">${imp.items.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`
   : imp.link ? `<a class="copy impact-link" href="${imp.link}" target="_blank" rel="noopener noreferrer">${esc(imp.p)}</a>`
   : `<p class="copy">${esc(imp.p)}</p>`;
@@ -2606,11 +2641,11 @@ function renderTrack(t, i) {
         <div class="std-quote"><p class="quote">“${esc(t.quote)}”</p></div></div>
       <div class="tk-meta"><p class="tk-sub">${esc(t.sub)}</p>
       <p class="tk-legend"><span><i class="tk-d m2"></i>${esc(t.legend[0])}</span><span><i class="tk-d m1"></i>${esc(t.legend[1])}</span><span><i class="tk-d m0"></i>${esc(t.legend[2])}</span></p></div>
-      <div class="tk-box"><table class="tk-table">
+      <div class="tk-box"><div class="tk-scroll" tabindex="0" aria-label="${esc(t.title)}"><table class="tk-table">
         <thead><tr><th scope="col" class="tk-h0">${esc(t.header)}</th>${t.criteria.map((c) => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead>
         ${groups.map((g) => `<tbody><tr class="tk-ch"><th scope="rowgroup" colspan="${t.criteria.length + 1}"><b>${esc(g.ch)}</b>${esc(g.name)}</th></tr>
           ${g.rows.map((r) => `<tr><th scope="row"><button type="button" class="tk-go" data-go="${r.i}"><i class="tk-no">${String(++no).padStart(2, '0')}</i><img src="${r.cover}" alt=""><span><b>${esc(r.title)}</b></span></button></th>${r.marks.map(mark).join('')}</tr>`).join('')}</tbody>`).join('')}
-      </table></div>
+      </table></div></div>
     </div></div>`;
     $$('.tk-go', sec).forEach((b) => b.addEventListener('click', () => go(+b.dataset.go)));
     return watchTQ(sec);
